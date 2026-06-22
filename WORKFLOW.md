@@ -1,7 +1,7 @@
-# CramAI 開發團隊工作流程 v1.0
+# CramAI 開發團隊工作流程 v1.1
 
 > 最後更新：2026-06-22
-> 適用範圍：Idea3（主力）、Pi4、Air13 三機協作
+> 適用範圍：Idea3、Pi4、Air13 三機協作
 
 ---
 
@@ -112,7 +112,53 @@ hermes kanban show t_xxxxx
 
 ---
 
-## 四、Kanban 操作規範
+## ⚠️ 四、安全規則（Coder 紅線）
+
+### ❌ 絕對禁止
+
+**任何 API Key、Token、密碼、Secret 不得寫死在程式碼中。**
+
+違規案例：在 `main.py` 中直接寫入 LINE Channel Secret 和 Token，導致 GitGuardian 偵測外洩。
+
+### ✅ 正確做法
+
+所有機敏資訊必須：
+
+1. 放在 `.env` 檔案（已在 `.gitignore` 中排除）
+2. 透過 `pydantic-settings` 或 `os.environ` 讀取
+3. 或透過 Hermes config 傳遞
+
+```python
+# ❌ 錯誤
+settings_db[tenant_id].line_channel_secret = "abc123..."
+
+# ✅ 正確
+from app.config import get_settings
+cfg = get_settings()
+settings_db[tenant_id].line_channel_secret = cfg.line_channel_secret
+```
+
+### 🔍 QA 安全檢查清單
+
+每次 QA 驗證時，**必須**檢查以下項目：
+
+```
+[ ] 程式碼中是否有任何硬編碼的 credential？（grep for: api_key, secret, token, password）
+[ ] .env 是否在 .gitignore 中？
+[ ] 環境變數是否透過 config.py 讀取？
+[ ] 是否有未授權的 credential 提交到 git 歷史？
+```
+
+### 🔄 若發生洩漏
+
+1. **立即通知 CEO**，不可自行處理
+2. CEO 通知 @apollo 決定是否更換憑證
+3. 憑證更換後，從 git 歷史中清除（filter-branch / force push）
+4. 檢討為何 QA 未攔截
+
+---
+
+## 五、Kanban 操作規範
 
 ### 開票格式
 
@@ -154,7 +200,7 @@ hermes kanban ls
 # 看單一 ticket 完整記錄（含所有 comment + 事件）
 hermes kanban show t_xxxxx
 
-# 看 worker log（Coder 的執行記錄）
+# 看 worker log
 hermes kanban log t_xxxxx
 
 # 加 comment（追蹤進度用）
@@ -166,7 +212,7 @@ hermes kanban complete t_xxxxx
 
 ---
 
-## 五、QA 測試報告規範
+## 六、QA 測試報告規範
 
 QA 每次驗證後必須產出測試報告，存到 `~/CramAI/tests/`。
 
@@ -191,10 +237,15 @@ QA 每次驗證後必須產出測試報告，存到 `~/CramAI/tests/`。
 ## 測試目標
 [一句話說明這個 ticket 在測什麼]
 
+## 安全檢查
+[ ] 無硬編碼 credential
+[ ] .env 有正確排除
+[ ] config 從環境變數讀取
+
 ## 測試方法
 1. [步驟 1]
 2. [步驟 2]
-3. ...
+...
 
 ## 測試環境
 - Backend: localhost:8000
@@ -210,18 +261,16 @@ QA 每次驗證後必須產出測試報告，存到 `~/CramAI/tests/`。
 - **實際:** [實際結果]
 - **判定:** ✅ PASS / ❌ FAIL
 
-### Case 2: ...
-...
-
 ## 結論
 - **判定:** ✅ PASS / ❌ FAIL
-- **Iteration 計數:** v1 / v2 / v3
+- **安全檢查:** ✅ PASS / ❌ FAIL
+- **Iteration:** vN
 - **備註:** [其他注意事項]
 ```
 
 ---
 
-## 六、Git 操作規範
+## 七、Git 操作規範
 
 ### 分支策略
 
@@ -238,26 +287,25 @@ main ← 只有 CEO 可合併
 # Coder push 前先 bump 版號
 echo "0.2" > ~/CramAI/VERSION
 
-# 修改 backend/app/__init__.py 或 main.py 中的 version
-
 git add -A
-git commit -m "0.2 — 修復 LINE Bot 簽章驗證"
+git commit -m "0.2 — 功能說明"
 git push origin main
 git tag v0.2
 git push origin v0.2
 ```
 
-### 不同客戶分支（未來）
+### 🔒 Push 前檢查
 
-```
-main
-  └── client/zhuoyue    ← 卓越補習班專屬設定
-  └── client/mingren     ← 明仁補習班專屬設定
+```bash
+# 檢查是否有 credential 混入
+grep -rn "api_key\|secret\|token\|password" --include="*.py" --include="*.ts" --include="*.tsx" .
+# 確認 .env 不在 commit 中
+git status --short | grep .env
 ```
 
 ---
 
-## 七、不同機器協作注意事項
+## 八、不同機器協作注意事項
 
 | 機器 | 負責事項 | 注意 |
 |------|---------|------|
@@ -271,12 +319,12 @@ main
 
 ---
 
-## 八、緊急中斷規則
+## 九、緊急中斷規則
 
 如果開發過程中發生以下情況，Coder/QA 必須立即暫停並通知 CEO：
 
 1. **同 bug 修復 3 次未過** → 強制停止，CEO 匯報 @apollo
-2. **發現重大安全漏洞** → 立即通報
+2. **發現重大安全漏洞（含 credential 外洩）** → 立即通報
 3. **客戶需求變更** → 暫停當前工作，等 CEO 重新規劃
 4. **任何需要決策的模糊點** → 停，問 CEO，不自己猜
 
