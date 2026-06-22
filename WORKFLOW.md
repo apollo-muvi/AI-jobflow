@@ -321,6 +321,14 @@ git push origin v0.2
 ```
 
 ### 🔒 Push 前檢查
+\n### ⚡ Build 前注意
+```
+# Vite 會快取舊的靜態資源（圖片、SVG等）
+# 如果發現瀏覽器一直顯示舊檔案，先清快取再 build：
+rm -rf ~/CramAI/frontend/node_modules/.vite
+npm run build
+```
+
 
 ```bash
 # 檢查是否有 credential 混入
