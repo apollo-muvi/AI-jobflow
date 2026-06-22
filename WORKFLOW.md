@@ -138,16 +138,42 @@ cfg = get_settings()
 settings_db[tenant_id].line_channel_secret = cfg.line_channel_secret
 ```
 
-### 🔍 QA 安全檢查清單
+### 🔍 QA 驗證檢查清單
 
 每次 QA 驗證時，**必須**檢查以下項目：
 
+**安全檢查：**
 ```
 [ ] 程式碼中是否有任何硬編碼的 credential？（grep for: api_key, secret, token, password）
 [ ] .env 是否在 .gitignore 中？
 [ ] 環境變數是否透過 config.py 讀取？
 [ ] 是否有未授權的 credential 提交到 git 歷史？
 ```
+
+**功能檢查：**
+```
+[ ] E2E 流程正常（使用者操作情境）
+[ ] RAG 查詢準確回應（對照知識庫內容）
+[ ] API 回傳正確 HTTP status code
+[ ] LINE webhook 正常運作
+```
+
+**UI/UX 檢查：**
+```
+[ ] Progress bar 遞增不跳動
+[ ] 錯誤訊息友善且有意義
+[ ] 載入狀態有清楚指示
+[ ] 行動裝置版面正常
+```
+
+### 產品使用手冊
+每次版本發布前，QA 需產出或更新產品使用手冊，存於 `docs/user-guide.md`。
+
+內容應包含：
+- 產品一句話介紹
+- 快速開始（LINE 加好友、Demo 網站操作）
+- 功能說明（上傳文件、問問題、Admin Dashboard）
+- 常見問題 Q&A
 
 ### 🔄 若發生洩漏
 
