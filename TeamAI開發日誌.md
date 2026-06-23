@@ -7,6 +7,16 @@
 
 ## 2026-06-24
 
+### 本日進展
+
+| 項目 | 狀態 | 說明 |
+|------|:----:|------|
+| 雙向溝通檢查 | ✅ | Hub 已啟動 (port 8765)，測試訊息已送達但小p client 未在線 |
+| Gmail bug 修復 | ✅ | Coder 完成：移除破損 import，註解 router，保留 code |
+| 確認小p回應 | ❌ | 小p client.py 未在 Pi4 運行，尚未回覆 |
+| main → pinecone sync | ⏳ 待辦 | 等待小p上線後執行 |
+| Pinecone deploy | ⏳ 待辦 | 等待 API key |
+
 ### 專案基本盤
 
 | 項目 | 內容 |
