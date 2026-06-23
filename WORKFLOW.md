@@ -23,6 +23,7 @@
 | **Idea3** (24GB) | 🧠 CEO + 開發除錯 | 主力開發、Kanban、LLM API |
 | **小p** (4GB + 512GB SSD) | 🚀 Deployer | 常開不關機、部署CramAI服務、Cloudflare Tunnel、備份、監控 |
 | **Air13** (4GB) | 🧪 QA（備用） | 不常用，QA 暫代其 Reviewer 職責 |
+| **小a** (Air13) | 🎲 機動支援 | 不常在線，忙時才支援 |
 
 ---
 
