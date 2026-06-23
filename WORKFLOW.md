@@ -1,7 +1,7 @@
-# CramAI 開發團隊工作流程 v1.1
+# CramAI 開發團隊工作流程 v1.0
 
 > 最後更新：2026-06-22
-> 適用範圍：Idea3、Pi4、Air13 三機協作
+> 適用範圍：Idea3（主力）、Pi4、Air13 三機協作
 
 ---
 
@@ -12,16 +12,17 @@
 | **創辦人** | @apollo | 產品方向決策、最終批准、客戶溝通 | 所有 |
 | **🧠 CEO** | Hermes (on Idea3) | 產品規劃、任務分解、派活、品質把關、資源調度 | Kanban管理、Delegate、確認關卡 |
 | **👨‍💻 Coder** | Claude Sonnet 4 | 照 Implementation Plan 寫 code、修 bug | 僅接 CEO 任務 |
-| **🔍 Reviewer** | o4-mini | Code review、Implementation drift 檢查 | 審查 Coder 產出 |
+| **🤖 Assist Coder** | Gemini 3.1 Flash-Lite | 協助 CEO 寫 code、debug、驗證 bug | 僅接 CEO 任務 |
+| **🔍 Reviewer** | o4-mini | Code review、Implementation drift 檢查 | 審查 Coder / Assist Coder 產出 |
 | **🧪 QA** | deepseek / Claude | E2E 測試、功能驗證、Deploy、文件手冊 | 測試、出報告 |
 
 ### 三機分工
 
 | 機器 | 角色 | 用途 |
 |------|------|------|
-| **Idea3** (24GB) | 🧠 CEO + Backend | 主力開發、LLM API、Qdrant、Kanban |
-| **Pi4** (4GB) | 👨‍💻 Coder / 🧪 QA（輕量） | Telegram bot、輕量測試 |
-| **Air13** (4GB) | 🔍 Reviewer / 🧪 QA | Code review、測試驗證 |
+| **Idea3** (24GB) | 🧠 CEO + 開發除錯 | 主力開發、Kanban、LLM API |
+| **小p** (4GB + 512GB SSD) | 🚀 Deployer | 常開不關機、部署CramAI服務、Cloudflare Tunnel、備份、監控 |
+| **Air13** (4GB) | 🧪 QA（備用） | 不常用，QA 暫代其 Reviewer 職責 |
 
 ---
 
@@ -112,79 +113,7 @@ hermes kanban show t_xxxxx
 
 ---
 
-## ⚠️ 四、安全規則（Coder 紅線）
-
-### ❌ 絕對禁止
-
-**任何 API Key、Token、密碼、Secret 不得寫死在程式碼中。**
-
-違規案例：在 `main.py` 中直接寫入 LINE Channel Secret 和 Token，導致 GitGuardian 偵測外洩。
-
-### ✅ 正確做法
-
-所有機敏資訊必須：
-
-1. 放在 `.env` 檔案（已在 `.gitignore` 中排除）
-2. 透過 `pydantic-settings` 或 `os.environ` 讀取
-3. 或透過 Hermes config 傳遞
-
-```python
-# ❌ 錯誤
-settings_db[tenant_id].line_channel_secret = "abc123..."
-
-# ✅ 正確
-from app.config import get_settings
-cfg = get_settings()
-settings_db[tenant_id].line_channel_secret = cfg.line_channel_secret
-```
-
-### 🔍 QA 驗證檢查清單
-
-每次 QA 驗證時，**必須**檢查以下項目：
-
-**安全檢查：**
-```
-[ ] 程式碼中是否有任何硬編碼的 credential？（grep for: api_key, secret, token, password）
-[ ] .env 是否在 .gitignore 中？
-[ ] 環境變數是否透過 config.py 讀取？
-[ ] 是否有未授權的 credential 提交到 git 歷史？
-```
-
-**功能檢查：**
-```
-[ ] E2E 流程正常（使用者操作情境）
-[ ] RAG 查詢準確回應（對照知識庫內容）
-[ ] API 回傳正確 HTTP status code
-[ ] LINE webhook 正常運作
-```
-
-**UI/UX 檢查：**
-```
-[ ] Progress bar 遞增不跳動
-[ ] 錯誤訊息友善且有意義
-[ ] 載入狀態有清楚指示
-[ ] 行動裝置版面正常
-```
-
-### 產品使用手冊
-每次版本發布前，QA 需產出或更新產品使用手冊，存於 `docs/user-guide.md`。
-
-內容應包含：
-- 產品一句話介紹
-- 快速開始（LINE 加好友、Demo 網站操作）
-- 功能說明（上傳文件、問問題、Admin Dashboard）
-- 常見問題 Q&A
-
-### 🔄 若發生洩漏
-
-1. **立即通知 CEO**，不可自行處理
-2. CEO 通知 @apollo 決定是否更換憑證
-3. 憑證更換後，從 git 歷史中清除（filter-branch / force push）
-4. 檢討為何 QA 未攔截
-
----
-
-## 五、Kanban 操作規範
+## 四、Kanban 操作規範
 
 ### 開票格式
 
@@ -226,7 +155,7 @@ hermes kanban ls
 # 看單一 ticket 完整記錄（含所有 comment + 事件）
 hermes kanban show t_xxxxx
 
-# 看 worker log
+# 看 worker log（Coder 的執行記錄）
 hermes kanban log t_xxxxx
 
 # 加 comment（追蹤進度用）
@@ -238,7 +167,7 @@ hermes kanban complete t_xxxxx
 
 ---
 
-## 六、QA 測試報告規範
+## 五、QA 測試報告規範
 
 QA 每次驗證後必須產出測試報告，存到 `~/CramAI/tests/`。
 
@@ -263,15 +192,10 @@ QA 每次驗證後必須產出測試報告，存到 `~/CramAI/tests/`。
 ## 測試目標
 [一句話說明這個 ticket 在測什麼]
 
-## 安全檢查
-[ ] 無硬編碼 credential
-[ ] .env 有正確排除
-[ ] config 從環境變數讀取
-
 ## 測試方法
 1. [步驟 1]
 2. [步驟 2]
-...
+3. ...
 
 ## 測試環境
 - Backend: localhost:8000
@@ -287,16 +211,18 @@ QA 每次驗證後必須產出測試報告，存到 `~/CramAI/tests/`。
 - **實際:** [實際結果]
 - **判定:** ✅ PASS / ❌ FAIL
 
+### Case 2: ...
+...
+
 ## 結論
 - **判定:** ✅ PASS / ❌ FAIL
-- **安全檢查:** ✅ PASS / ❌ FAIL
-- **Iteration:** vN
+- **Iteration 計數:** v1 / v2 / v3
 - **備註:** [其他注意事項]
 ```
 
 ---
 
-## 七、Git 操作規範
+## 六、Git 操作規範
 
 ### 分支策略
 
@@ -313,29 +239,34 @@ main ← 只有 CEO 可合併
 # Coder push 前先 bump 版號
 echo "0.2" > ~/CramAI/VERSION
 
+# 修改 backend/app/__init__.py 或 main.py 中的 version
+
 git add -A
-git commit -m "0.2 — 功能說明"
+git commit -m "0.2 — 修復 LINE Bot 簽章驗證"
 git push origin main
 git tag v0.2
 git push origin v0.2
 ```
 
-### 🔒 Push 前檢查
-\n### ⚡ Build 前注意
+### 不同客戶分支（未來）
+
 ```
-# Vite 會快取舊的靜態資源（圖片、SVG等）
-# 如果發現瀏覽器一直顯示舊檔案，先清快取再 build：
-rm -rf ~/CramAI/frontend/node_modules/.vite
-npm run build
+main
+  └── client/zhuoyue    ← 卓越補習班專屬設定
+  └── client/mingren     ← 明仁補習班專屬設定
 ```
 
+---
 
-```bash
-# 檢查是否有 credential 混入
-grep -rn "api_key\|secret\|token\|password" --include="*.py" --include="*.ts" --include="*.tsx" .
-# 確認 .env 不在 commit 中
-git status --short | grep .env
-```
+## 七、安全規則（Credential 管理）
+
+開發與部署流程中，所有 API Key、Token、Secret 必須遵守以下規則：
+
+1. **零硬編碼原則** — 任何 credential 不得直接寫在 .py / .yaml / .json / .toml 原始碼中
+2. **強制環境變數** — 所有敏感值必須從 `.env`（開發）或系統環境變數（生產）讀取
+3. **．env 隔離** — `.env` 已加入 `.gitignore`，永不被 git 追蹤。新增.env.\* 檔案時務必檢查
+4. **密碼掃描** — 每次 commit 前建議執行 `git diff HEAD` 確認無 credential 混入
+5. **GitGuardian** — 若 GitGuardian 偵測到外洩，立刻撤銷受影響的 credential 並更新
 
 ---
 
@@ -358,7 +289,7 @@ git status --short | grep .env
 如果開發過程中發生以下情況，Coder/QA 必須立即暫停並通知 CEO：
 
 1. **同 bug 修復 3 次未過** → 強制停止，CEO 匯報 @apollo
-2. **發現重大安全漏洞（含 credential 外洩）** → 立即通報
+2. **發現重大安全漏洞** → 立即通報
 3. **客戶需求變更** → 暫停當前工作，等 CEO 重新規劃
 4. **任何需要決策的模糊點** → 停，問 CEO，不自己猜
 
