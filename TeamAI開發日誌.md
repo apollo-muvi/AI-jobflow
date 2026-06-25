@@ -7,102 +7,63 @@
 
 ## 2026-06-24
 
-### 本日進展
+### 本日進展（延續）
 
 | 項目 | 狀態 | 說明 |
 |------|:----:|------|
-| 雙向溝通檢查 | ✅ | Hub 已啟動 (port 8765)，測試訊息已送達但小p client 未在線 |
-| Gmail bug 修復 | ✅ | Coder 完成：移除破損 import，註解 router，保留 code |
-| 確認小p回應 | ❌ | 小p client.py 未在 Pi4 運行，尚未回覆 |
-| main → pinecone sync | ⏳ 待辦 | 等待小p上線後執行 |
-| Pinecone deploy | ⏳ 待辦 | 等待 API key |
+| Hub client.py ACK 迴圈 bug | ✅ 已修 | 防止 CEO 機器自我回覆形成 ∞ 迴圈 |
+| 團隊架構圖更新 | ✅ | drawio 版本，含 創辦人→CEO→Coder/小陳/Reviewer/QA→小p Deployer |
+| 小p正式指定為 Deployer | ✅ | 角色: Docker build + CI/CD + Cloudflare Tunnel + 監控備份 + Deployment Checklist |
+| OpsQA-prompt.md 更新 | ✅ | 移除佈署上線職責（改小p負責） |
+| WORKFLOW.md 更新 | ✅ | 新增小p Deployer 角色列，移除 Air13 QA 備用職 |
+| Agent Team skill 更新 | ✅ | ai-agent-team-architecture 加入 小陳/小p/Deployer |
+| 小陳 Demo bugs 修復 | ✅ | branch: fix/clear-mobile-upload (commit 7c4912c) |
+| 清除對話按鈕 | ✅ | 小陳實作，上傳文件後 Q&A 區出現 🗑️ 按鈕 |
+| 手機上傳修復 | ✅ | upload-zone 改 `<label>` 包裹，iOS Safari 可觸發檔案選擇 |
+| client.py 修復部署 | ✅ | CEO client 重啟 (PID 70421) |
+| 小p 正式任務 #001 | ⏳ 進行中 | QA 驗證 + Deploy（限 30 分鐘逐條回報） |
 
-### 專案基本盤
+### ⚙️ 團隊架構（更新）
 
-| 項目 | 內容 |
-|------|------|
-| Repo | github.com/apollo-muvi/cram_service |
-| 本機路徑 | ~/CramAI/ |
-| Branch | **main** (Qdrant), **pinecone** (Pinecone Serverless) |
-| Domain | cramai.rain0425.com |
-| 最新 commit | `e5accaf` fix: API prefix /api/v1/ → /api/ |
-| GitHub Issues | 1 個 open (#1 小p 工作說明) |
+```
+                 👑 創辦人 @apollo
+                        │
+                   🧠 CEO (deepseek v4 flash)
+                   brainstorm + 拆需求 + 派活
+                  ┌──────┬──────┬──────┐
+                  │      │      │      │
+          👨‍💻 Coder  🔍 Reviewer  🧪 QA/Ops
+          Claude     o4-mini     deepseek/Claude
+          Sonnet 4   code review E2E測試+文件
+              │
+          🤖 小陳
+          (Assist Coder, Gemini 3.1 FL)
+          寫code/debug/驗證
+                  │
+              🚀 小p (Pi4) — Deployer
+              Docker build + CI/CD + Tunnel
+              Deployment Checklist + 監控備份
+```
 
----
+### 角色對照表
 
-### ✅ 已完成 (v0.7)
+| 角色 | 模型/機器 | 職責 |
+|------|----------|------|
+| 🧠 CEO | deepseek v4 flash (idea3) | Brainstorm + 拆任務 + 派活 + 最終簽核 |
+| 👨‍💻 Coder | Claude Sonnet 4 | 照 Implementation Plan 寫 code |
+| 🤖 小陳 (Assist Coder) | Gemini 3.1 Flash-Lite | 協助寫 code、debug、驗證 bug |
+| 🔍 Reviewer | o4-mini | Code review、Implementation drift 檢查 |
+| 🧪 QA/Ops | deepseek/Claude (delegate_task) | E2E 測試、Test Report、文件手冊 |
+| 🚀 小p | Pi4 (4GB + 512GB SSD) | Docker build + 部署、CI/CD、Tunnel、監控 |
 
-**Phase 1 — Foundation**
-- FastAPI 後端骨架 + 資料模型 (Tenant/Conversation/Document)
-- RAG Engine (Qdrant + OpenRouter Qwen3 Embedding)
-- 文件解析 (PDF/DOCX/TXT/MD)
-- Docker Compose (Qdrant + Backend + Frontend)
+### 目前待完成
 
-**Phase 2 — LINE Bot**
-- webhook_line.py — LINE Messaging API 整合
-- 簽章驗證、自動回覆
-
-**Phase 3 — Email**
-- gmail_service.py — Gmail API 輪詢 + Plus Addressing
-- RAG 自動回覆郵件
-- 中文寄件者修復
-
-**Phase 4 — Admin Dashboard**
-- React + Vite + TypeScript 前端
-- Demo 頁面 (檔案上傳 + Q&A 測試)
-- 對話紀錄、FAQ 管理、Settings 面板
-- Loading spinner、auto-scroll、.md 上傳支援
-
-**QA 驗證**
-- ✅ Credential 硬編碼安全修復 (2026-06-22)
-- ✅ UX 優化驗證：spinner + auto-scroll (2026-06-23)
-- ✅ Gmail reply 中文寄件者修復驗證 (2026-06-23)
-- ✅ RAG 基本測試：PDF 上傳 + 問答回覆 (2026-06-22)
-- ✅ API prefix 標準化 (/api/v1/ → /api/)
-- ✅ 產品使用手冊 v0.7
-
----
-
-### ⏳ 待完成 / 已知問題
-
-| # | 項目 | 狀態 | 說明 |
-|---|------|:----:|------|
-| 1 | **.env API key 失效** | ❌ 卡住 | OPENROUTER_API_KEY 被系統 redaction 遮罩，需重寫有效 key |
-| 2 | **Backend 未啟動** | ❌ | Docker backend container not running (port 8000) |
-| 3 | **Frontend 未啟動** | ❌ | Docker frontend container not running (port 3000) |
-| 4 | **RAG end-to-end 驗證** | ❌ 未完成 | 6/21 跑到一半因 API key 中斷，從未真正驗證完整 pipeline |
-| 5 | **cramai.rain0425.com 運作確認** | ❌ 未驗證 | 需小p確認 Cloudflare Tunnel + 服務是否正常 |
-| 6 | **GitHub Issue #1** | 📄 待回覆 | 小p 工作說明，尚未回覆「確認理解」 |
-| 7 | **小p 自動 pull 機制** | ⏳ 待辦 | crontab 定時 pull pinecone branch + 重啟 |
-
----
-
-### 小p 任務看板
-
-| 狀態 | 任務 | 說明 |
-|:----:|------|------|
-| 🔄 進行中 | 讀取 WORKFLOW.md | 到 AI-jobflow repo 讀完整流程，理解後回覆 CEO |
-| ⏳ 待辦 | 確認 cramai.rain0425.com 運作 | 確保服務正常運行 |
-| ⏳ 待辦 | 設定自動 pull 機制 | crontab 定時 pull + 重啟 |
-
----
-
-### 技術細節
-
-#### 運行中服務
-| 服務 | 狀態 | Port |
-|------|:----:|:----:|
-| Qdrant (向量庫) | ✅ 運行中 | 6333 |
-| Backend (FastAPI) | ❌ 未啟動 | 8000 |
-| Frontend (React) | ❌ 未啟動 | 3000 |
-
-#### .env 現狀
-- OPENROUTER_API_KEY=*** (被遮罩，長度/可用性不明)
-- GEMINI_API_KEY=*** (小陳 Gemini，被遮罩)
-- GOOGLE_API_KEY=*** (被遮罩)
-
-#### 主要障礙
-唯一瓶頸：**寫入有效的 OpenRouter API key** → 啟動 backend/frontend → 執行 RAG end-to-end 驗證 → 確認 cramai.rain0425.com 上線。API key 解決前，其他項目均無法推進。
+| 優先 | 項目 | 負責 | 狀態 |
+|:----:|------|:----:|:----:|
+| 🔴 1 | 小p 執行 QA 驗證 + Deploy (Demo bugs) | 小p | ⏳ 限30分 |
+| 🟡 2 | Demo 頁面 mobile 上傳驗證 | QA/小p | ⏳ |
+| 🟡 3 | 建立正式 QA 員工（非小p暫代） | CEO | 📋 待安排 |
+| 🟢 4 | client.py Pi4 端更新（同步修復） | 小p | ⏳ 等上線 |
 
 ---
 
