@@ -1,0 +1,124 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="team-arch" name="團隊架構">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- 創辦人 -->
+        <mxCell id="2" value="👑 創辦人 @apollo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#334155;fontColor=#ffffff;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="320" y="30" width="200" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: 創辦人 → CEO -->
+        <mxCell id="3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=block;strokeColor=#64748b;strokeWidth=2;" edge="1" parent="1" source="2" target="4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- CEO -->
+        <mxCell id="4" value="🧠 CEO (deepseek v4 flash)
+        ─────────────────
+        brainstorm + 拆需求 + 派活
+        三業務線全域視角 + 最終簽核" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f97316;strokeColor=#ea580c;fontColor=#ffffff;fontSize=13;fontStyle=0;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="270" y="120" width="300" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- CEO → Coder -->
+        <mxCell id="5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=block;strokeColor=#64748b;strokeWidth=2;" edge="1" parent="1" source="4" target="6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- CEO → Reviewer -->
+        <mxCell id="7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=block;strokeColor=#64748b;strokeWidth=2;" edge="1" parent="1" source="4" target="8">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- CEO → QA -->
+        <mxCell id="9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.8;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=block;strokeColor=#64748b;strokeWidth=2;" edge="1" parent="1" source="4" target="10">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Coder -->
+        <mxCell id="6" value="👨‍💻 Coder (Claude Sonnet 4)
+        ─────────────────────────
+        寫 code 主力
+        照 Implementation Plan 實作" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2563eb;strokeColor=#1d4ed8;fontColor=#ffffff;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="250" width="200" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- 小陳 (Assist Coder) -->
+        <mxCell id="11" value="🤖 小陳 Assist Coder (Gemini 3.1 FL)
+        ──────────────────────────────────
+        協助寫 code、debug、測試驗證
+        不決定方向、follow CEO 指令" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8b5cf6;strokeColor=#7c3aed;fontColor=#ffffff;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="360" width="200" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Coder → 小陳 -->
+        <mxCell id="12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=block;strokeColor=#64748b;strokeWidth=1;dashed=1;" edge="1" parent="1" source="6" target="11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Reviewer -->
+        <mxCell id="8" value="🔍 Reviewer (o4-mini)
+        ─────────────────────
+        嚴格 code review
+        Blocking/Major/Minor 分級
+        寧可 false positive 不放過" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#059669;strokeColor=#047857;fontColor=#ffffff;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="320" y="250" width="200" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- QA -->
+        <mxCell id="10" value="🧪 QA / Ops (deepseek/Claude)
+        ─────────────────────────────
+        E2E 測試 ➔ Test Report
+        Workflow 配置 ➔ 文件手冊" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d97706;strokeColor=#b45309;fontColor=#ffffff;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="580" y="250" width="200" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Coder → Reviewer (code submit) -->
+        <mxCell id="13" value="code submit" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=block;strokeColor=#64748b;strokeWidth=1;dashed=1;fontSize=11;fontColor=#94a3b8;" edge="1" parent="1" source="6" target="8">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- 小p (Deployer) at bottom -->
+        <mxCell id="14" value="🚀 小p (Pi4) — Deployer
+        ───────────────────────
+        Docker build + 部署
+        CI/CD pipeline 配置
+        Cloudflare Tunnel 維護
+        Deployment Checklist 產出
+        系統監控 + 備份" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0d9488;strokeColor=#0f766e;fontColor=#ffffff;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="270" y="470" width="300" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- QA → 小p (deploy release) -->
+        <mxCell id="15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=block;strokeColor=#64748b;strokeWidth=2;" edge="1" parent="1" source="10" target="14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- CEO → 小p (deploy order) -->
+        <mxCell id="16" value="deploy order" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;endArrow=block;strokeColor=#64748b;strokeWidth=2;" edge="1" parent="1" source="4" target="14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Knowledge Base (side) -->
+        <mxCell id="17" value="📚 Knowledge Base
+        ─────────────────
+        化神大大 / docs/
+        ├─ clients/     (客戶專案)
+        ├─ homeworks/   (家教App)
+        ├─ agent-templates/
+        └─ frameworks/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#78716c;strokeColor=#57534e;fontColor=#ffffff;fontSize=12;align=left;verticalAlign=middle;arcSize=10;" vertex="1" parent="1">
+          <mxGeometry x="580" y="470" width="200" height="110" as="geometry"/>
+        </mxCell>
+
+        <!-- CEO → KB -->
+        <mxCell id="18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;endArrow=open;strokeColor=#64748b;strokeWidth=1;dashed=1;" edge="1" parent="1" source="4" target="17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
