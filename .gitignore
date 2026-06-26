@@ -1,0 +1,4 @@
+# AI-jobflow .gitignore
+# Ignore runtime DB files and compiled bytecode
+team-notify/*.db
+team-notify/__pycache__/
